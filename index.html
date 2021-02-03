@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script defer src="index.js"></script>
+
+    <style>
+        input
+        {
+            border: none;
+            outline: none;
+            width: 500px;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+        }
+
+        #notCiphered, #ciphered
+        {
+            padding: 5px 0 5px 10px;
+        }
+
+        #notCiphered
+        {
+            border: 1px solid red;
+        }
+        #ciphered
+        {
+            border: 1px solid green;
+        }
+    </style>
+</head>
+<body>
+
+<input type="text" name="" id="notCiphered" value="hello"/>
+
+<button id="do">Зашифровать</button>
+
+<p id="key"></p>
+
+<input type="text" name="" id="ciphered"/>
+
+</body>
+</html>
