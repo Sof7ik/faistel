@@ -2,6 +2,8 @@ const notCipheredElem = document.getElementById('notCiphered');
 const cipheredElem = document.getElementById('ciphered');
 const button = document.getElementById('do');
 
+let keyNum;
+
 const cipher = string => {
     let key = [];
     let keyString = '';
@@ -11,8 +13,10 @@ const cipher = string => {
     // Генерация ключа
     for (let i = 1; i < keyLength + 1; i++)
     {
-        key.push(Math.floor(Math.random() * (keyLength - 1) + 1));
+        // key.push(Math.floor(Math.random() * (keyLength - 1) + 1));
+        key.push(i);
     }
+    keyNum = parseInt(key.join(''));
 
     // смещение строки
 
@@ -51,7 +55,7 @@ const cipher = string => {
 
     let newMessageBitsString = newMessageBits.join('');
 
-    console.log(`Длина битового сообщения = ${newMessageBitsString.length}, четность ${newMessageBitsString.length % 2}`);
+    console.log(`Длина битового сообщения = ${newMessageBitsString.length}, чётность - ${newMessageBitsString.length % 2 === 0 ? 'чётное' : 'нечётное'}`);
 
     // Если длина битового представления нечетная, то добавляем вперед незначимый нулевой бит
     if (newMessageBitsString.length % 2 !== 0)
@@ -96,36 +100,108 @@ const cipher = string => {
 
     console.log(leftBlock);
 
-    const mediumOldLeftBlock = someFoo(parseInt(key.join('')), parseInt(leftBlock.join('')));
+    const mediumOldLeftBlock = someFoo(keyNum, parseInt(leftBlock.join('')));
     console.log('Левый блок после промежуточной функции перед XOR с правым блоком', mediumOldLeftBlock.toString().split(''));
 
-    // function XOR (block1, block2)
-    // {
-    //     let leftBlockAfterXOR = '';
-    //     console.log('mediumOldLeftBlock in XOR foo', block1);
-    //     console.log('rightBlock in XOR foo', block2);
-    //
-    //     for (let i = 0; i < block1.length + 1; i++)
-    //     {
-    //         leftBlockAfterXOR = leftBlockAfterXOR + (block1[i] ^ block2[i]);
-    //     }
-    //     return leftBlockAfterXOR;
-    // }
-    //
-    // let leftBlockAfterXOR = XOR(mediumOldLeftBlock.toString().split(''), rightBlock);
-    //
+     function XOR (block1, block2)
+     {
+         let leftBlockAfterXOR = [];
+
+         for (let i = 0; i < block1.length + 1; i++)
+         {
+             if (block1[i] === block2[i])
+             {
+                 leftBlockAfterXOR.push('0')
+             }
+             else
+             {
+                 leftBlockAfterXOR.push('1')
+             }
+         }
+
+         console.log('leftBlockAfterXOR', leftBlockAfterXOR)
+
+         return leftBlockAfterXOR.join('');
+     }
+
+    let leftBlockAfterXOR = XOR(mediumOldLeftBlock.toString().split(''), rightBlock);
+
     // console.log('leftBlockAfterXOR = ', leftBlockAfterXOR);
-    //
-    // let newLeftBlock=[...leftBlockAfterXOR], newRightBlock = [...leftBlock];
-    // console.log('')
-    // console.log('----Новые блоки----');
-    // console.log('Левый блок', newLeftBlock);
-    // console.log('Правый блок', newRightBlock);
-    //
-    // const cipheredMessage = newLeftBlock.concat(newRightBlock);
-    //
-    // cipheredElem.value = cipheredMessage.join('');
+
+    let newLeftBlock=[...leftBlockAfterXOR], newRightBlock = [...leftBlock];
+    console.log('')
+    console.log('----Новые блоки----');
+    console.log('Левый блок', newLeftBlock);
+    console.log('Правый блок', newRightBlock)
+
+    const leftBlockLength = newLeftBlock.length;
+    const rightBlockLength = newRightBlock.length;
+
+    document.getElementById('leftBlockLength').textContent = leftBlockLength.toString('10');
+    document.getElementById('rightBlockLength').textContent = rightBlockLength.toString('10');
+
+    const cipheredMessage = newLeftBlock.concat(newRightBlock);
+
+    cipheredElem.value = cipheredMessage.join('');
+}
+
+function decrypt(elemToDecryptFrom, elemToDecryptTo, keyNum, ...lengthes)
+{
+    let decryptedLeftBlock, decryptedRightBlock;
+    const [encryptedLeftBlockLength, encryptedRightBlockLength] = [...lengthes];
+    const decryptKey = keyNum;
+
+    console.log(encryptedLeftBlockLength)
+
+    const encryptedValue = elemToDecryptFrom.value;
+
+    let encryptedValueSymbols = encryptedValue.split('');
+
+    // console.log(encryptedValueSymbols);
+
+    let leftBlockDecrypt = [], rightBlockDecrypt = [];
+
+    encryptedValueSymbols.forEach( (item, index) => {
+        if (index < encryptedLeftBlockLength)
+        {
+            rightBlockDecrypt.push(item);
+        }
+        else
+        {
+            leftBlockDecrypt.push(item);
+        }
+    })
+
+    console.log(leftBlockDecrypt);
+    console.log(rightBlockDecrypt);
+
+    function decryptSomeFoo(blockToDecrypt, key)
+    {
+        if (blockToDecrypt.charAt(0) === '0')
+        {
+            blockToDecrypt = `1${blockToDecrypt}`;
+        }
+
+        let NumberBlockToDecrypt = parseInt(blockToDecrypt, 2);
+
+        blockToDecrypt = NumberBlockToDecrypt - Math.pow(2, blockToDecrypt.length - 1);
+
+        console.log(blockToDecrypt / key);
+
+        // return blockToDecrypt / key;
+    }
+
+    let decryptedNumRightBlock = decryptSomeFoo(rightBlockDecrypt.join(''), decryptKey);
+    // console.log(decryptedNumRightBlock);
 }
 
 button.addEventListener('click', e => cipher(notCipheredElem.value));
 button.click();
+
+const encryptedElem = document.getElementById('ciphered');
+const decryptedElem = document.getElementById('decrypted');
+
+const decryptButton = document.getElementById('decrypt');
+
+decryptButton.addEventListener('click', e => decrypt(encryptedElem, decryptedElem, keyNum, document.getElementById('leftBlockLength').textContent));
+decryptButton.click();

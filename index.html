@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-    <script defer src="index.js"></script>
+    <script defer src="encrypt.js"></script>
+    <script defer src="decrypt.js"></script>
 
     <style>
         input
@@ -16,11 +17,15 @@
             border-radius: 10px;
 
             font-size: 16px;
-        }
 
-        #notCiphered, #ciphered
-        {
             padding: 5px 0 5px 10px;
+
+            display: block;
+        }
+        
+        p
+        {
+            /*display: none;*/
         }
 
         #notCiphered
@@ -30,6 +35,10 @@
         #ciphered
         {
             border: 1px solid green;
+        }
+        #decrypted
+        {
+            border: 1px solid red;
         }
     </style>
 </head>
@@ -42,6 +51,13 @@
 <p id="key"></p>
 
 <input type="text" name="" id="ciphered"/>
+
+<p id="leftBlockLength"></p>
+<p id="rightBlockLength"></p>
+
+<button id="decrypt">Разобрать</button>
+
+<input type="text" id="decrypted">
 
 </body>
 </html>
